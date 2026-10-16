@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>מחשבון וקטורים אינטראקטיבי – מכניקה 83312</title>
+<style>
+:root{--bg:#f7f8fa;--panel:#fff;--ink:#1b2430;--mute:#5d6877;--line:#dde2ea;--grid:#e8ecf2;--a:#1f5fd6;--b:#d63a2f;--c:#16803c;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12161c;--panel:#1b222b;--ink:#e8ecf2;--mute:#9aa6b6;--line:#2c3643;--grid:#252e3a;--a:#6aa1ff;--b:#ff7b70;--c:#4fd17f;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#12161c;--panel:#1b222b;--ink:#e8ecf2;--mute:#9aa6b6;--line:#2c3643;--grid:#252e3a;--a:#6aa1ff;--b:#ff7b70;--c:#4fd17f;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 "David Libre","Frank Ruhl Libre",Georgia,serif}
+main{max-width:980px;margin:0 auto;padding:20px 16px 40px}
+h1{font-size:1.6rem;margin:0 0 4px}
+p.lead{margin:0 0 18px;color:var(--mute)}
+.layout{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:16px}
+@media (max-width:760px){.layout{grid-template-columns:1fr}}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:14px}
+svg{width:100%;height:auto;display:block;touch-action:none;max-width:100%}
+.row{display:flex;gap:8px;align-items:center;margin:6px 0;flex-wrap:wrap}
+.row label{min-width:2.4em;font-weight:700}
+input[type=number]{width:4.6em;font:inherit;padding:4px 6px;border:1px solid var(--line);border-radius:5px;background:var(--bg);color:var(--ink);direction:ltr;text-align:center}
+.a{color:var(--a)}.b{color:var(--b)}.c{color:var(--c)}
+.seg{display:flex;border:1px solid var(--line);border-radius:6px;overflow:hidden;margin-bottom:10px}
+.seg button{flex:1;font:inherit;padding:7px;border:0;background:var(--bg);color:var(--ink);cursor:pointer}
+.seg button[aria-pressed=true]{background:var(--ink);color:var(--bg)}
+button:focus-visible,input:focus-visible{outline:2px solid var(--a);outline-offset:2px}
+table{width:100%;border-collapse:collapse;margin-top:8px}
+td{padding:5px 0;border-bottom:1px solid var(--line);vertical-align:top}
+td:last-child{direction:ltr;text-align:left;font-variant-numeric:tabular-nums}
+.hint{font-size:.9rem;color:var(--mute);margin-top:10px}
+</style>
+</head>
+<body>
+<main>
+<h1>מחשבון וקטורים אינטראקטיבי</h1>
+<p class="lead">משלים את פרק שבוע ראשון בספר מכניקה 83312. גררו את ראשי החצים או הקלידו רכיבים.</p>
+<div class="layout">
+  <div class="panel">
+    <svg id="plot" viewBox="-7 -7 14 14" role="img" aria-label="גרף וקטורים"></svg>
+  </div>
+  <div class="panel">
+    <div class="seg" role="group" aria-label="פעולה">
+      <button id="opAdd" aria-pressed="true">חיבור a + b</button>
+      <button id="opSub" aria-pressed="false">חיסור a − b</button>
+    </div>
+    <div class="row"><label class="a">a</label> x <input id="ax" type="number" step="0.5" value="3"> y <input id="ay" type="number" step="0.5" value="2"></div>
+    <div class="row"><label class="b">b</label> x <input id="bx" type="number" step="0.5" value="1"> y <input id="by" type="number" step="0.5" value="3"></div>
+    <table id="out"></table>
+    <p class="hint">הזווית והמכפלה הוקטורית מחושבות במישור (z = 0). במכפלה וקטורית מוצג רכיב ה-k בלבד.</p>
+  </div>
+</div>
+</main>
+<script>
+(function(){
+var NS="http://www.w3.org/2000/svg",svg=document.getElementById("plot"),op="+";
+var ids=["ax","ay","bx","by"],el={};ids.forEach(function(i){el[i]=document.getElementById(i)});
+var v={ax:3,ay:2,bx:1,by:3};
+function css(n){return getComputedStyle(document.documentElement).getPropertyValue(n).trim()}
+function mk(t,at,txt){var e=document.createElementNS(NS,t);for(var k in at)e.setAttribute(k,at[k]);if(txt!=null)e.textContent=txt;svg.appendChild(e);return e}
+function arrow(x1,y1,x2,y2,col,w,dash){
+  var dx=x2-x1,dy=y2-y1,L=Math.hypot(dx,dy);if(L<1e-9)return;
+  var ux=dx/L,uy=dy/L,h=Math.min(.35,L*.4),px=-uy,py=ux;
+  mk("line",{x1:x1,y1:-y1,x2:x2-ux*h*.8,y2:-(y2-uy*h*.8),stroke:col,"stroke-width":w,"stroke-dasharray":dash||"","stroke-linecap":"round"});
+  mk("polygon",{points:[x2,-y2,x2-ux*h+px*h*.4,-(y2-uy*h+py*h*.4),x2-ux*h-px*h*.4,-(y2-uy*h-py*h*.4)].join(" "),fill:col});
+}
+function label(x,y,t,col){var e=mk("text",{x:x,y:-y,fill:col,"font-size":.6,"font-style":"italic","font-family":"Georgia,serif","paint-order":"stroke",stroke:css("--panel"),"stroke-width":.15},t);return e}
+function f(n){return (Math.round(n*100)/100).toString().replace("-","−")}
+function draw(){
+  while(svg.firstChild)svg.removeChild(svg.firstChild);
+  var A=css("--a"),B=css("--b"),C=css("--c"),G=css("--grid"),I=css("--ink");
+  for(var i=-6;i<=6;i++){mk("line",{x1:i,y1:-6,x2:i,y2:6,stroke:G,"stroke-width":.04});mk("line",{x1:-6,y1:i,x2:6,y2:i,stroke:G,"stroke-width":.04})}
+  arrow(-6.5,0,6.5,0,I,.06);arrow(0,-6.5,0,6.5,I,.06);
+  mk("text",{x:6.4,y:-.35,fill:I,"font-size":.55,"font-style":"italic"},"x");mk("text",{x:.25,y:-6.2,fill:I,"font-size":.55,"font-style":"italic"},"y");
+  var ax=v.ax,ay=v.ay,bx=v.bx,by=v.by,cx,cy;
+  if(op==="+"){
+    cx=ax+bx;cy=ay+by;
+    mk("line",{x1:bx,y1:-by,x2:cx,y2:-cy,stroke:A,"stroke-width":.05,"stroke-dasharray":".2 .15",opacity:.5});
+    arrow(0,0,ax,ay,A,.12);arrow(ax,ay,cx,cy,B,.12);arrow(0,0,bx,by,B,.05,".2 .15");
+  }else{
+    cx=ax-bx;cy=ay-by;
+    arrow(0,0,ax,ay,A,.12);arrow(0,0,bx,by,B,.12);arrow(bx,by,ax,ay,C,.07,".2 .15");
+  }
+  arrow(0,0,cx,cy,C,.14);
+  label(ax/2-.5,ay/2+.4,"a",A);label(bx/2+.2,by/2+.2,"b",B);label(cx/2+.2,cy/2-.7,"c",C);
+  [["a",ax,ay,A],["b",bx,by,B]].forEach(function(p){
+    var h=mk("circle",{cx:p[1],cy:-p[2],r:.28,fill:p[3],opacity:.25,style:"cursor:grab"});h.dataset.k=p[0];
+    h.addEventListener("pointerdown",function(ev){drag=p[0];h.setPointerCapture(ev.pointerId)});
+  });
+  report(cx,cy);
+}
+var drag=null;
+svg.addEventListener("pointermove",function(ev){
+  if(!drag)return;var pt=svg.createSVGPoint();pt.x=ev.clientX;pt.y=ev.clientY;
+  var q=pt.matrixTransform(svg.getScreenCTM().inverse()),x=Math.max(-6,Math.min(6,Math.round(q.x*2)/2)),y=Math.max(-6,Math.min(6,Math.round(-q.y*2)/2));
+  v[drag+"x"]=x;v[drag+"y"]=y;el[drag+"x"].value=x;el[drag+"y"].value=y;draw();
+});
+["pointerup","pointercancel"].forEach(function(e){svg.addEventListener(e,function(){drag=null})});
+function report(cx,cy){
+  var ax=v.ax,ay=v.ay,bx=v.bx,by=v.by,ma=Math.hypot(ax,ay),mb=Math.hypot(bx,by),mc=Math.hypot(cx,cy),dot=ax*bx+ay*by,cr=ax*by-ay*bx;
+  var ang=(ma&&mb)?Math.acos(Math.max(-1,Math.min(1,dot/(ma*mb))))*180/Math.PI:null;
+  var rows=[["c = a "+(op==="+"?"+":"−")+" b","("+f(cx)+", "+f(cy)+")"],["|a|",f(ma)],["|b|",f(mb)],["|c|",f(mc)],
+  ["â (וקטור יחידה)",ma?"("+f(ax/ma)+", "+f(ay/ma)+")":"לא מוגדר"],
+  ["a · b",f(dot)],["זווית θ בין a ל-b",ang==null?"לא מוגדר":f(ang)+"°"],["(a × b)·k",f(cr)]];
+  document.getElementById("out").innerHTML=rows.map(function(r){return "<tr><td>"+r[0]+"</td><td>"+r[1]+"</td></tr>"}).join("");
+}
+ids.forEach(function(i){el[i].addEventListener("input",function(){var n=parseFloat(el[i].value);v[i]=isNaN(n)?0:n;draw()})});
+function setOp(o){op=o;document.getElementById("opAdd").setAttribute("aria-pressed",o==="+");document.getElementById("opSub").setAttribute("aria-pressed",o==="-");draw()}
+document.getElementById("opAdd").onclick=function(){setOp("+")};
+document.getElementById("opSub").onclick=function(){setOp("-")};
+if(window.matchMedia)window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change",draw);
+draw();
+})();
+</script>
+</body>
+</html>
