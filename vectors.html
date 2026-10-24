@@ -3,55 +3,124 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>מחשבון וקטורים אינטראקטיבי – מכניקה 83312</title>
+<title>מחשבון וקטורים וסימולציית מישור משופע – מכניקה 83312</title>
 <style>
-:root{--bg:#f7f8fa;--panel:#fff;--ink:#1b2430;--mute:#5d6877;--line:#dde2ea;--grid:#e8ecf2;--a:#1f5fd6;--b:#d63a2f;--c:#16803c;
+:root{--bg:#f7f8fa;--panel:#fff;--ink:#1b2430;--mute:#5d6877;--line:#dde2ea;--grid:#e8ecf2;--a:#1f5fd6;--b:#d63a2f;--c:#16803c;--d:#7a3eea;
 box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12161c;--panel:#1b222b;--ink:#e8ecf2;--mute:#9aa6b6;--line:#2c3643;--grid:#252e3a;--a:#6aa1ff;--b:#ff7b70;--c:#4fd17f;color-scheme:dark}}
-:root[data-theme="dark"]{--bg:#12161c;--panel:#1b222b;--ink:#e8ecf2;--mute:#9aa6b6;--line:#2c3643;--grid:#252e3a;--a:#6aa1ff;--b:#ff7b70;--c:#4fd17f;color-scheme:dark}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12161c;--panel:#1b222b;--ink:#e8ecf2;--mute:#9aa6b6;--line:#2c3643;--grid:#252e3a;--a:#6aa1ff;--b:#ff7b70;--c:#4fd17f;--d:#c39dff;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#12161c;--panel:#1b222b;--ink:#e8ecf2;--mute:#9aa6b6;--line:#2c3643;--grid:#252e3a;--a:#6aa1ff;--b:#ff7b70;--c:#4fd17f;--d:#c39dff;color-scheme:dark}
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 "David Libre","Frank Ruhl Libre",Georgia,serif}
-main{max-width:980px;margin:0 auto;padding:20px 16px 40px}
+main{max-width:1040px;margin:0 auto;padding:20px 16px 40px}
 h1{font-size:1.6rem;margin:0 0 4px}
+h2{font-size:1.3rem;margin:0 0 8px}
 p.lead{margin:0 0 18px;color:var(--mute)}
 .layout{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:16px}
-@media (max-width:760px){.layout{grid-template-columns:1fr}}
+@media (max-width:880px){.layout{grid-template-columns:1fr}}
 .panel{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:14px}
 svg{width:100%;height:auto;display:block;touch-action:none;max-width:100%}
 .row{display:flex;gap:8px;align-items:center;margin:6px 0;flex-wrap:wrap}
 .row label{min-width:2.4em;font-weight:700}
-input[type=number]{width:4.6em;font:inherit;padding:4px 6px;border:1px solid var(--line);border-radius:5px;background:var(--bg);color:var(--ink);direction:ltr;text-align:center}
-.a{color:var(--a)}.b{color:var(--b)}.c{color:var(--c)}
+input[type=number],input[type=text]{width:6.2em;font:inherit;padding:4px 6px;border:1px solid var(--line);border-radius:5px;background:var(--bg);color:var(--ink);direction:ltr;text-align:center}
+input[type=text]{width:100%;text-align:left}
+.a{color:var(--a)}.b{color:var(--b)}.c{color:var(--c)}.d{color:var(--d)}
 .seg{display:flex;border:1px solid var(--line);border-radius:6px;overflow:hidden;margin-bottom:10px}
 .seg button{flex:1;font:inherit;padding:7px;border:0;background:var(--bg);color:var(--ink);cursor:pointer}
 .seg button[aria-pressed=true]{background:var(--ink);color:var(--bg)}
+button{font:inherit;padding:7px 10px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink);cursor:pointer}
 button:focus-visible,input:focus-visible{outline:2px solid var(--a);outline-offset:2px}
+button[disabled]{opacity:.45;cursor:not-allowed}
 table{width:100%;border-collapse:collapse;margin-top:8px}
 td{padding:5px 0;border-bottom:1px solid var(--line);vertical-align:top}
 td:last-child{direction:ltr;text-align:left;font-variant-numeric:tabular-nums}
 .hint{font-size:.9rem;color:var(--mute);margin-top:10px}
+.section{margin-top:18px}
+.controls-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 12px}
+@media (max-width:520px){.controls-grid{grid-template-columns:1fr}}
+.control{display:flex;align-items:center;gap:8px}
+.control label{min-width:9.2em;font-weight:700}
+.kv td:first-child{color:var(--mute)}
+.legend{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;font-size:.92rem;margin-top:8px}
+@media (max-width:640px){.legend{grid-template-columns:1fr}}
+.legend span{display:flex;align-items:center;gap:6px}
+.sw{width:14px;height:3px;border-radius:2px;display:inline-block}
+.note{font-size:.95rem;color:var(--mute);margin:8px 0 0}
+.qrWrap{display:grid;grid-template-columns:minmax(0,1fr) 190px;gap:12px;align-items:start}
+@media (max-width:760px){.qrWrap{grid-template-columns:1fr}.qrWrap img{margin-inline:auto}}
+.qrWrap img{width:180px;height:180px;border:1px solid var(--line);border-radius:6px;background:var(--panel)}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.small{font-size:.9rem}
+.status{font-weight:700}
 </style>
 </head>
 <body>
 <main>
-<h1>מחשבון וקטורים אינטראקטיבי</h1>
-<p class="lead">משלים את פרק שבוע ראשון בספר מכניקה 83312. גררו את ראשי החצים או הקלידו רכיבים.</p>
+<h1>מחשבון וקטורים וסימולציית מישור משופע</h1>
+<p class="lead">כלי לימוד אינטראקטיבי למכניקה: גם וקטורים וגם גוף על מישור משופע עם כוח הכובד, נורמל וחיכוך.</p>
+
 <div class="layout">
   <div class="panel">
     <svg id="plot" viewBox="-7 -7 14 14" role="img" aria-label="גרף וקטורים"></svg>
   </div>
   <div class="panel">
     <div class="seg" role="group" aria-label="פעולה">
-      <button id="opAdd" aria-pressed="true">חיבור a + b</button>
-      <button id="opSub" aria-pressed="false">חיסור a − b</button>
+      <button id="opAdd" aria-pressed="true" type="button">חיבור a + b</button>
+      <button id="opSub" aria-pressed="false" type="button">חיסור a − b</button>
     </div>
-    <div class="row"><label class="a">a</label> x <input id="ax" type="number" step="0.5" value="3"> y <input id="ay" type="number" step="0.5" value="2"></div>
-    <div class="row"><label class="b">b</label> x <input id="bx" type="number" step="0.5" value="1"> y <input id="by" type="number" step="0.5" value="3"></div>
+    <div class="row"><label class="a" for="ax">a</label> x <input id="ax" type="number" step="0.5" value="3"> y <input id="ay" type="number" step="0.5" value="2"></div>
+    <div class="row"><label class="b" for="bx">b</label> x <input id="bx" type="number" step="0.5" value="1"> y <input id="by" type="number" step="0.5" value="3"></div>
     <table id="out"></table>
     <p class="hint">הזווית והמכפלה הוקטורית מחושבות במישור (z = 0). במכפלה וקטורית מוצג רכיב ה-k בלבד.</p>
   </div>
 </div>
+
+<section class="section" aria-labelledby="inclinedPlaneTitle">
+  <h2 id="inclinedPlaneTitle">Inclined Plane (Tilted Floor) Animation</h2>
+  <div class="layout">
+    <div class="panel">
+      <svg id="inclinedPlot" viewBox="0 0 760 420" role="img" aria-label="Inclined-plane mechanics scene with force vectors"></svg>
+      <div class="legend" aria-label="Force legend">
+        <span><i class="sw" style="background:var(--b)"></i>Gravity <span class="small">(mg)</span></span>
+        <span><i class="sw" style="background:var(--a)"></i>Normal <span class="small">(N)</span></span>
+        <span><i class="sw" style="background:var(--c)"></i>Friction <span class="small">(f)</span></span>
+      </div>
+      <p id="simStatus" class="note status" aria-live="polite"></p>
+    </div>
+    <div class="panel">
+      <div class="controls-grid">
+        <div class="control"><label for="angle">Angle θ (deg)</label><input id="angle" type="number" inputmode="decimal" min="0" max="60" step="1"></div>
+        <div class="control"><label for="muS">Static μs</label><input id="muS" type="number" inputmode="decimal" min="0" max="2" step="0.01"></div>
+        <div class="control"><label for="muK">Kinetic μk</label><input id="muK" type="number" inputmode="decimal" min="0" max="2" step="0.01"></div>
+        <div class="control"><label for="mass">Mass m (kg)</label><input id="mass" type="number" inputmode="decimal" min="0.1" max="30" step="0.1"></div>
+        <div class="control"><label for="gravity">Gravity g (m/s²)</label><input id="gravity" type="number" inputmode="decimal" min="1" max="20" step="0.1"></div>
+      </div>
+
+      <div class="actions">
+        <button id="playPause" type="button" aria-pressed="false">Play</button>
+        <button id="resetSim" type="button">Reset</button>
+        <button id="restartSim" type="button">Restart with new params</button>
+      </div>
+
+      <table class="kv" id="forceTable" aria-label="Computed force values"></table>
+
+      <p class="note">If \(mg\sin\theta \le \mu_s N\), static friction can exactly oppose the downslope pull and the block stays at rest. If \(mg\sin\theta > \mu_s N\), it slides and friction becomes kinetic: \(f_k=\mu_k N\).</p>
+
+      <div class="section qrWrap">
+        <div>
+          <label for="shareUrl" class="small" style="display:block;margin-bottom:4px">Shareable URL (same parameters):</label>
+          <input id="shareUrl" type="text" readonly>
+          <div class="actions">
+            <button id="copyUrl" type="button">Copy URL</button>
+            <button id="shareNative" type="button">Share</button>
+          </div>
+          <p class="hint">Use the QR to place this interactive setup in TeX/LaTeX documents. The URL uses the current page origin + query parameters.</p>
+        </div>
+        <img id="qrImage" alt="QR code for the current simulation URL">
+      </div>
+    </div>
+  </div>
+</section>
 </main>
 <script>
 (function(){
@@ -102,8 +171,7 @@ function report(cx,cy){
   var ax=v.ax,ay=v.ay,bx=v.bx,by=v.by,ma=Math.hypot(ax,ay),mb=Math.hypot(bx,by),mc=Math.hypot(cx,cy),dot=ax*bx+ay*by,cr=ax*by-ay*bx;
   var ang=(ma&&mb)?Math.acos(Math.max(-1,Math.min(1,dot/(ma*mb))))*180/Math.PI:null;
   var rows=[["c = a "+(op==="+"?"+":"−")+" b","("+f(cx)+", "+f(cy)+")"],["|a|",f(ma)],["|b|",f(mb)],["|c|",f(mc)],
-  ["â (וקטור יחידה)",ma?"("+f(ax/ma)+", "+f(ay/ma)+")":"לא מוגדר"],
-  ["a · b",f(dot)],["זווית θ בין a ל-b",ang==null?"לא מוגדר":f(ang)+"°"],["(a × b)·k",f(cr)]];
+  ["â (וקטור יחידה)",ma?"("+f(ax/ma)+", "+f(ay/ma)+")":"לא מוגדר"],["a · b",f(dot)],["זווית θ בין a ל-b",ang==null?"לא מוגדר":f(ang)+"°"],["(a × b)·k",f(cr)]];
   document.getElementById("out").innerHTML=rows.map(function(r){return "<tr><td>"+r[0]+"</td><td>"+r[1]+"</td></tr>"}).join("");
 }
 ids.forEach(function(i){el[i].addEventListener("input",function(){var n=parseFloat(el[i].value);v[i]=isNaN(n)?0:n;draw()})});
@@ -112,6 +180,259 @@ document.getElementById("opAdd").onclick=function(){setOp("+")};
 document.getElementById("opSub").onclick=function(){setOp("-")};
 if(window.matchMedia)window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change",draw);
 draw();
+})();
+
+(function(){
+var NS="http://www.w3.org/2000/svg";
+var svg=document.getElementById("inclinedPlot");
+var inputs={
+  angle:document.getElementById("angle"),
+  muS:document.getElementById("muS"),
+  muK:document.getElementById("muK"),
+  mass:document.getElementById("mass"),
+  gravity:document.getElementById("gravity")
+};
+var btnPlayPause=document.getElementById("playPause");
+var btnReset=document.getElementById("resetSim");
+var btnRestart=document.getElementById("restartSim");
+var statusEl=document.getElementById("simStatus");
+var forceTable=document.getElementById("forceTable");
+var shareEl=document.getElementById("shareUrl");
+var qrImage=document.getElementById("qrImage");
+var copyBtn=document.getElementById("copyUrl");
+var shareBtn=document.getElementById("shareNative");
+
+var DEFAULTS={angle:24,muS:0.42,muK:0.34,mass:3,gravity:9.81};
+var LIMITS={
+  angle:[0,60],
+  muS:[0,2],
+  muK:[0,2],
+  mass:[0.1,30],
+  gravity:[1,20]
+};
+
+function clamp(value,min,max){return Math.min(max,Math.max(min,value))}
+function parseNum(raw,fallback){var n=parseFloat(raw);return isNaN(n)?fallback:n}
+function normalizeState(state){
+  var out={};
+  Object.keys(DEFAULTS).forEach(function(k){
+    out[k]=clamp(parseNum(state[k],DEFAULTS[k]),LIMITS[k][0],LIMITS[k][1]);
+  });
+  if(out.muK>out.muS)out.muK=out.muS;
+  return out;
+}
+function parseParamsFromSearch(search){
+  var params=new URLSearchParams((search||"").replace(/^\?/,""));
+  return normalizeState({
+    angle:params.get("angle"),
+    muS:params.get("mus"),
+    muK:params.get("muk"),
+    mass:params.get("mass"),
+    gravity:params.get("g")
+  });
+}
+function toTrimmed(n){return String(Math.round(n*1000)/1000)}
+function serializeParams(state){
+  var p=normalizeState(state),q=new URLSearchParams();
+  q.set("angle",toTrimmed(p.angle));
+  q.set("mus",toTrimmed(p.muS));
+  q.set("muk",toTrimmed(p.muK));
+  q.set("mass",toTrimmed(p.mass));
+  q.set("g",toTrimmed(p.gravity));
+  return q.toString();
+}
+function buildShareUrl(state){
+  var u=new URL(window.location.href);
+  u.search=serializeParams(state);
+  u.hash="";
+  return u.toString();
+}
+function computeForces(state,velocity){
+  var theta=state.angle*Math.PI/180;
+  var mg=state.mass*state.gravity;
+  var normal=mg*Math.cos(theta);
+  var downslope=mg*Math.sin(theta);
+  var maxStatic=state.muS*normal;
+  var sliding=downslope>maxStatic+1e-9 || Math.abs(velocity)>1e-6;
+  var friction=Math.min(sliding?state.muK*normal:downslope,maxStatic);
+  var net=sliding?(downslope-friction):0;
+  var accel=net/state.mass;
+  return {theta:theta,mg:mg,normal:normal,downslope:downslope,maxStatic:maxStatic,friction:friction,net:net,accel:accel,sliding:sliding};
+}
+
+var state=parseParamsFromSearch(window.location.search);
+var sim={running:false,s:0,v:0,lastTs:0,needsRestart:false};
+
+function syncInputValues(){
+  Object.keys(inputs).forEach(function(k){inputs[k].value=toTrimmed(state[k])});
+}
+function updateShareUrl(){
+  var url=buildShareUrl(state);
+  shareEl.value=url;
+  qrImage.src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data="+encodeURIComponent(url);
+  qrImage.alt="QR code for inclined-plane simulation: "+url;
+  history.replaceState(null,"",window.location.pathname+"?"+serializeParams(state));
+}
+
+function cssVar(name){return getComputedStyle(document.documentElement).getPropertyValue(name).trim()}
+function clearSvg(){while(svg.firstChild)svg.removeChild(svg.firstChild)}
+function mk(t,at,txt){var e=document.createElementNS(NS,t);for(var k in at)e.setAttribute(k,at[k]);if(txt!=null)e.textContent=txt;svg.appendChild(e);return e}
+function drawArrow(x1,y1,x2,y2,col,width,label){
+  var dx=x2-x1,dy=y2-y1,L=Math.hypot(dx,dy);if(L<1e-4)return;
+  var ux=dx/L,uy=dy/L,head=Math.min(18,L*0.35),px=-uy,py=ux;
+  mk("line",{x1:x1,y1:y1,x2:x2-ux*head*0.8,y2:y2-uy*head*0.8,stroke:col,"stroke-width":width,"stroke-linecap":"round"});
+  mk("polygon",{points:[x2,y2,x2-ux*head+px*head*0.45,y2-uy*head+py*head*0.45,x2-ux*head-px*head*0.45,y2-uy*head-py*head*0.45].join(" "),fill:col});
+  if(label){
+    mk("text",{x:x2+6,y:y2-6,fill:col,"font-size":16,"font-weight":"700","paint-order":"stroke",stroke:cssVar("--panel"),"stroke-width":3},label);
+  }
+}
+
+function renderScene(){
+  clearSvg();
+  var f=computeForces(state,sim.v);
+  var W=760,H=420;
+  var start={x:140,y:110};
+  var L=500;
+  var ux=Math.cos(f.theta),uy=Math.sin(f.theta);
+  var nx=-uy,ny=ux;
+  var end={x:start.x+L*ux,y:start.y+L*uy};
+  var maxTravel=L-100;
+  sim.s=clamp(sim.s,0,maxTravel);
+  var blockCenter={x:start.x+sim.s*ux-26*nx,y:start.y+sim.s*uy-26*ny};
+  var maxForce=Math.max(f.mg,f.normal,f.friction,1);
+  var scale=130/maxForce;
+  var A=cssVar("--a"),B=cssVar("--b"),C=cssVar("--c"),I=cssVar("--ink"),G=cssVar("--grid"),D=cssVar("--d");
+
+  for(var gx=20;gx<=W;gx+=40)mk("line",{x1:gx,y1:20,x2:gx,y2:H-10,stroke:G,"stroke-width":1});
+  for(var gy=20;gy<=H-10;gy+=40)mk("line",{x1:20,y1:gy,x2:W-20,y2:gy,stroke:G,"stroke-width":1});
+
+  mk("line",{x1:start.x-30,y1:start.y+8,x2:end.x+20,y2:end.y+8,stroke:D,"stroke-width":8,opacity:.35,"stroke-linecap":"round"});
+  mk("line",{x1:start.x-30,y1:start.y,x2:end.x+20,y2:end.y,stroke:I,"stroke-width":4,"stroke-linecap":"round"});
+  mk("text",{x:start.x+18,y:start.y+26,fill:I,"font-size":18},"θ = "+toTrimmed(state.angle)+"°");
+
+  var bw=86,bh=52;
+  var ang=state.angle;
+  var transform="translate("+blockCenter.x+" "+blockCenter.y+") rotate("+ang+")";
+  mk("rect",{x:-bw/2,y:-bh/2,width:bw,height:bh,rx:8,ry:8,fill:"#f6b85f",stroke:I,"stroke-width":2,transform:transform});
+  mk("text",{x:blockCenter.x-20,y:blockCenter.y+6,fill:I,"font-size":17,"font-weight":"700"},"m");
+
+  var fg=blockCenter;
+  drawArrow(fg.x,fg.y,fg.x,fg.y+f.mg*scale,B,4,"mg");
+  drawArrow(fg.x,fg.y,fg.x+nx*f.normal*scale,fg.y+ny*f.normal*scale,A,4,"N");
+
+  var frSign=-1;
+  drawArrow(fg.x,fg.y,fg.x+frSign*ux*f.friction*scale,fg.y+frSign*uy*f.friction*scale,C,4,f.sliding?"fₖ":"fₛ");
+
+  mk("text",{x:end.x-20,y:end.y+34,fill:I,"font-size":15},"s = "+toTrimmed(sim.s)+" m");
+
+  var status=f.sliding?"Sliding: mg sinθ > μsN":"At rest: static friction balances mg sinθ";
+  if(sim.needsRestart)status="Parameters changed. Press \"Restart with new params\".";
+  statusEl.textContent=status;
+
+  forceTable.innerHTML=[
+    ["Weight |mg|",toTrimmed(f.mg)+" N"],
+    ["Normal N",toTrimmed(f.normal)+" N"],
+    ["Down-slope mg sinθ",toTrimmed(f.downslope)+" N"],
+    ["Max static friction μsN",toTrimmed(f.maxStatic)+" N"],
+    ["Applied friction " + (f.sliding?"fₖ":"fₛ"),toTrimmed(f.friction)+" N"],
+    ["Net along slope",toTrimmed(f.net)+" N"],
+    ["Acceleration a",toTrimmed(f.accel)+" m/s²"]
+  ].map(function(row){return "<tr><td>"+row[0]+"</td><td>"+row[1]+"</td></tr>"}).join("");
+}
+
+function updateButtons(){
+  btnPlayPause.textContent=sim.running?"Pause":"Play";
+  btnPlayPause.setAttribute("aria-pressed",sim.running?"true":"false");
+}
+function resetMotion(){sim.s=0;sim.v=0;sim.lastTs=0;sim.running=false;sim.needsRestart=false;updateButtons();renderScene()}
+function restartWithParams(){state=normalizeState(readInputs());syncInputValues();updateShareUrl();resetMotion()}
+function readInputs(){
+  return {
+    angle:inputs.angle.value,
+    muS:inputs.muS.value,
+    muK:inputs.muK.value,
+    mass:inputs.mass.value,
+    gravity:inputs.gravity.value
+  };
+}
+
+function step(ts){
+  if(!sim.running)return;
+  if(!sim.lastTs)sim.lastTs=ts;
+  var dt=Math.min(0.05,(ts-sim.lastTs)/1000);
+  sim.lastTs=ts;
+  var f=computeForces(state,sim.v);
+  if(f.sliding){
+    sim.v=Math.max(0,sim.v+f.accel*dt);
+    sim.s=sim.s+sim.v*dt;
+  }else{
+    sim.v=0;
+  }
+  var maxTravel=500-100;
+  if(sim.s>=maxTravel){
+    sim.s=maxTravel;
+    sim.running=false;
+    updateButtons();
+  }
+  renderScene();
+  if(sim.running)requestAnimationFrame(step);
+}
+
+Object.keys(inputs).forEach(function(k){
+  inputs[k].addEventListener("input",function(){
+    state=normalizeState(readInputs());
+    syncInputValues();
+    updateShareUrl();
+    sim.running=false;
+    sim.lastTs=0;
+    sim.needsRestart=true;
+    updateButtons();
+    renderScene();
+  });
+});
+
+btnPlayPause.addEventListener("click",function(){
+  if(sim.needsRestart){restartWithParams();}
+  sim.running=!sim.running;
+  sim.lastTs=0;
+  updateButtons();
+  if(sim.running)requestAnimationFrame(step);
+});
+btnReset.addEventListener("click",resetMotion);
+btnRestart.addEventListener("click",restartWithParams);
+
+copyBtn.addEventListener("click",function(){
+  var txt=shareEl.value;
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(txt).then(function(){copyBtn.textContent="Copied";setTimeout(function(){copyBtn.textContent="Copy URL"},1200)});
+  }else{
+    shareEl.focus();shareEl.select();
+    try{document.execCommand("copy");copyBtn.textContent="Copied";setTimeout(function(){copyBtn.textContent="Copy URL"},1200);}catch(e){}
+  }
+});
+shareBtn.addEventListener("click",function(){
+  var url=shareEl.value;
+  if(navigator.share){
+    navigator.share({title:"Inclined Plane Simulation",url:url}).catch(function(){});
+  }else{
+    shareEl.focus();shareEl.select();
+  }
+});
+
+if(!navigator.share)shareBtn.disabled=true;
+if(window.matchMedia)window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change",renderScene);
+
+syncInputValues();
+updateShareUrl();
+updateButtons();
+renderScene();
+
+window.InclinedPlanePhysics={
+  normalizeState:normalizeState,
+  parseParamsFromSearch:parseParamsFromSearch,
+  serializeParams:serializeParams,
+  computeForces:computeForces
+};
 })();
 </script>
 </body>
