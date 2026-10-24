@@ -1,0 +1,1270 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Inclined Plane — Mechanics</title>
+
+<style>
+:root {
+  --bg: #11101d;
+  --bg-soft: #19172a;
+  --panel: #211d35;
+  --panel-2: #28223f;
+  --ink: #fff7e8;
+  --muted: #b9b1c7;
+  --line: #403659;
+  --orange: #f3a35c;
+  --orange-light: #ffd08a;
+  --brown: #9c5e47;
+  --red: #ed806d;
+  --blue: #79b8ff;
+  --green: #83d39a;
+  --purple: #b99aff;
+  --shadow: rgba(0, 0, 0, .28);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--bg);
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  color: var(--ink);
+  background:
+    radial-gradient(circle at 15% 10%, rgba(115, 83, 176, .16), transparent 34rem),
+    radial-gradient(circle at 90% 25%, rgba(243, 163, 92, .08), transparent 30rem),
+    var(--bg);
+  font-family: Georgia, "Times New Roman", serif;
+  line-height: 1.5;
+}
+
+main {
+  width: min(1180px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 34px 0 60px;
+}
+
+h1,
+h2,
+p {
+  margin-top: 0;
+}
+
+h1 {
+  margin-bottom: 8px;
+  font-size: clamp(2rem, 4vw, 3.6rem);
+  font-weight: 400;
+  letter-spacing: -.04em;
+  line-height: 1.05;
+}
+
+.lead {
+  max-width: 720px;
+  margin-bottom: 26px;
+  color: var(--muted);
+  font-size: 1.05rem;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.45fr) minmax(310px, .75fr);
+  gap: 18px;
+  align-items: start;
+}
+
+.card {
+  overflow: hidden;
+  background: linear-gradient(145deg, var(--panel), var(--bg-soft));
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  box-shadow: 0 18px 50px var(--shadow);
+}
+
+.scene-card {
+  padding: 12px;
+}
+
+#scene {
+  display: block;
+  width: 100%;
+  height: auto;
+  min-height: 360px;
+  border-radius: 12px;
+  background: #171528;
+  touch-action: none;
+}
+
+.controls-card {
+  padding: 22px;
+}
+
+.control-group {
+  display: grid;
+  gap: 14px;
+  margin-bottom: 24px;
+}
+
+.control {
+  display: grid;
+  grid-template-columns: 1fr 92px;
+  gap: 12px;
+  align-items: center;
+}
+
+.control label {
+  color: var(--ink);
+  font-size: .98rem;
+}
+
+.control small {
+  display: block;
+  margin-top: 2px;
+  color: var(--muted);
+  font-size: .8rem;
+}
+
+input[type="number"],
+input[type="text"] {
+  width: 100%;
+  padding: 8px 9px;
+  color: var(--ink);
+  background: rgba(17, 16, 29, .7);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  font: inherit;
+  text-align: center;
+}
+
+input[type="text"] {
+  text-align: left;
+}
+
+input:focus-visible,
+button:focus-visible {
+  outline: 2px solid var(--orange-light);
+  outline-offset: 3px;
+}
+
+.buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+  margin-bottom: 22px;
+}
+
+button {
+  padding: 9px 13px;
+  color: var(--ink);
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  cursor: pointer;
+  font: inherit;
+  transition: transform .15s ease, background .15s ease, border-color .15s ease;
+}
+
+button:hover:not(:disabled) {
+  background: #332b50;
+  border-color: var(--orange);
+  transform: translateY(-1px);
+}
+
+button.primary {
+  color: #21172a;
+  background: var(--orange);
+  border-color: var(--orange);
+  font-weight: 700;
+}
+
+button.primary:hover:not(:disabled) {
+  background: var(--orange-light);
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: .45;
+}
+
+.status {
+  min-height: 52px;
+  margin: 0 0 20px;
+  padding: 12px 14px;
+  color: var(--orange-light);
+  background: rgba(243, 163, 92, .09);
+  border-left: 3px solid var(--orange);
+  border-radius: 7px;
+  font-size: .95rem;
+}
+
+.status.sliding {
+  color: var(--red);
+  background: rgba(237, 128, 109, .09);
+  border-left-color: var(--red);
+}
+
+.status.resting {
+  color: var(--green);
+  background: rgba(131, 211, 154, .09);
+  border-left-color: var(--green);
+}
+
+.status.restart {
+  color: var(--orange-light);
+  background: rgba(243, 163, 92, .09);
+  border-left-color: var(--orange);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0 0 22px;
+  font-size: .94rem;
+}
+
+td {
+  padding: 7px 0;
+  border-bottom: 1px solid rgba(64, 54, 89, .72);
+}
+
+td:last-child {
+  color: var(--orange-light);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.note {
+  margin: 0 0 16px;
+  color: var(--muted);
+  font-size: .88rem;
+}
+
+.legend {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px 12px;
+  margin: 13px 4px 4px;
+  color: var(--muted);
+  font-size: .88rem;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.swatch {
+  width: 24px;
+  height: 4px;
+  border-radius: 5px;
+}
+
+.equation {
+  margin: 0 0 20px;
+  padding: 15px;
+  color: var(--orange-light);
+  background: rgba(185, 154, 255, .08);
+  border: 1px solid rgba(185, 154, 255, .24);
+  border-radius: 10px;
+  font-size: 1.08rem;
+  text-align: center;
+}
+
+.share {
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+}
+
+.share label {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--muted);
+  font-size: .85rem;
+}
+
+.share-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+footer {
+  margin-top: 20px;
+  color: var(--muted);
+  font-size: .85rem;
+  text-align: center;
+}
+
+@media (max-width: 820px) {
+  main {
+    width: min(100% - 20px, 680px);
+    padding-top: 22px;
+  }
+
+  .layout {
+    grid-template-columns: 1fr;
+  }
+
+  #scene {
+    min-height: 260px;
+  }
+}
+
+@media (max-width: 450px) {
+  .controls-card {
+    padding: 16px;
+  }
+
+  .control {
+    grid-template-columns: 1fr 82px;
+  }
+
+  .legend {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
+</head>
+
+<body>
+<main>
+  <h1>Inclined Plane</h1>
+
+  <p class="lead">
+    Explore how gravity, the normal force, and friction determine whether a block
+    remains at rest or slides down a tilted surface.
+  </p>
+
+  <div class="layout">
+    <section class="card scene-card">
+      <svg
+        id="scene"
+        viewBox="0 0 900 560"
+        role="img"
+        aria-label="Animated block on an inclined plane with force vectors"
+      ></svg>
+
+      <div class="legend" aria-label="Force legend">
+        <div class="legend-item">
+          <span class="swatch" style="background:var(--red)"></span>
+          Gravity
+        </div>
+
+        <div class="legend-item">
+          <span class="swatch" style="background:var(--blue)"></span>
+          Normal force
+        </div>
+
+        <div class="legend-item">
+          <span class="swatch" style="background:var(--green)"></span>
+          Friction
+        </div>
+
+        <div class="legend-item">
+          <span class="swatch" style="background:var(--purple)"></span>
+          Components
+        </div>
+      </div>
+    </section>
+
+    <aside class="card controls-card">
+      <div class="equation">
+        <span>mg sin θ</span>
+        <span> versus </span>
+        <span>μ<sub>s</sub>N</span>
+      </div>
+
+      <div class="control-group">
+        <div class="control">
+          <label for="angle">
+            Angle θ
+            <small>Inclination of the plane</small>
+          </label>
+          <input id="angle" type="number" min="0" max="60" step="1">
+        </div>
+
+        <div class="control">
+          <label for="muS">
+            Static friction μ<sub>s</sub>
+            <small>Maximum friction before sliding</small>
+          </label>
+          <input id="muS" type="number" min="0" max="2" step=".01">
+        </div>
+
+        <div class="control">
+          <label for="muK">
+            Kinetic friction μ<sub>k</sub>
+            <small>Friction while sliding</small>
+          </label>
+          <input id="muK" type="number" min="0" max="2" step=".01">
+        </div>
+
+        <div class="control">
+          <label for="mass">
+            Mass m
+            <small>Mass of the block</small>
+          </label>
+          <input id="mass" type="number" min=".1" max="30" step=".1">
+        </div>
+
+        <div class="control">
+          <label for="gravity">
+            Gravity g
+            <small>Acceleration due to gravity</small>
+          </label>
+          <input id="gravity" type="number" min="1" max="20" step=".1">
+        </div>
+      </div>
+
+      <div class="buttons">
+        <button id="playPause" class="primary" type="button">Play</button>
+        <button id="reset" type="button">Reset</button>
+        <button id="restart" type="button">Restart with parameters</button>
+      </div>
+
+      <p id="status" class="status" aria-live="polite"></p>
+
+      <table aria-label="Force values">
+        <tbody id="forceTable"></tbody>
+      </table>
+
+      <p class="note">
+        Static friction adjusts itself up to μ<sub>s</sub>N. If the downslope
+        component of gravity exceeds that limit, the block begins to slide and
+        kinetic friction takes over.
+      </p>
+
+      <div class="share">
+        <label for="shareUrl">Shareable URL</label>
+        <input id="shareUrl" type="text" readonly>
+
+        <div class="share-actions">
+          <button id="copyUrl" type="button">Copy</button>
+          <button id="shareNative" type="button">Share</button>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <footer>
+    An interactive mechanics visualization.
+  </footer>
+</main>
+
+<script>
+(function () {
+  "use strict";
+
+  const NS = "http://www.w3.org/2000/svg";
+
+  const scene = document.getElementById("scene");
+  const statusEl = document.getElementById("status");
+  const forceTable = document.getElementById("forceTable");
+  const playPause = document.getElementById("playPause");
+  const resetButton = document.getElementById("reset");
+  const restartButton = document.getElementById("restart");
+  const shareUrl = document.getElementById("shareUrl");
+  const copyUrl = document.getElementById("copyUrl");
+  const shareNative = document.getElementById("shareNative");
+
+  const inputs = {
+    angle: document.getElementById("angle"),
+    muS: document.getElementById("muS"),
+    muK: document.getElementById("muK"),
+    mass: document.getElementById("mass"),
+    gravity: document.getElementById("gravity")
+  };
+
+  const DEFAULTS = {
+    angle: 24,
+    muS: 0.42,
+    muK: 0.34,
+    mass: 3,
+    gravity: 9.81
+  };
+
+  const LIMITS = {
+    angle: [0, 60],
+    muS: [0, 2],
+    muK: [0, 2],
+    mass: [0.1, 30],
+    gravity: [1, 20]
+  };
+
+  let state = readUrlState();
+
+  const motion = {
+    position: 0,
+    velocity: 0,
+    running: false,
+    lastTime: 0,
+    needsRestart: false
+  };
+
+  function clamp(value, min, max) {
+    return Math.max(min, Math.min(max, value));
+  }
+
+  function number(value, fallback) {
+    const parsed = Number.parseFloat(value);
+    return Number.isFinite(parsed) ? parsed : fallback;
+  }
+
+  function normalize(input) {
+    const output = {};
+
+    Object.keys(DEFAULTS).forEach(function (key) {
+      output[key] = clamp(
+        number(input[key], DEFAULTS[key]),
+        LIMITS[key][0],
+        LIMITS[key][1]
+      );
+    });
+
+    if (output.muK > output.muS) {
+      output.muK = output.muS;
+    }
+
+    return output;
+  }
+
+  function readUrlState() {
+    const params = new URLSearchParams(window.location.search);
+
+    return normalize({
+      angle: params.get("angle"),
+      muS: params.get("mus"),
+      muK: params.get("muk"),
+      mass: params.get("mass"),
+      gravity: params.get("g")
+    });
+  }
+
+  function setInputs() {
+    Object.keys(inputs).forEach(function (key) {
+      inputs[key].value = String(Math.round(state[key] * 1000) / 1000);
+    });
+  }
+
+  function serialize(current) {
+    const normalized = normalize(current);
+    const params = new URLSearchParams();
+
+    params.set("angle", normalized.angle);
+    params.set("mus", normalized.muS);
+    params.set("muk", normalized.muK);
+    params.set("mass", normalized.mass);
+    params.set("g", normalized.gravity);
+
+    return params.toString();
+  }
+
+  function updateShareUrl() {
+    const query = serialize(state);
+    const url = new URL(window.location.href);
+
+    url.search = query;
+    url.hash = "";
+
+    shareUrl.value = url.toString();
+
+    history.replaceState(
+      null,
+      "",
+      window.location.pathname + "?" + query
+    );
+  }
+
+  function color(variable) {
+    return getComputedStyle(document.documentElement)
+      .getPropertyValue(variable)
+      .trim();
+  }
+
+  function create(type, attributes, text) {
+    const element = document.createElementNS(NS, type);
+
+    Object.keys(attributes || {}).forEach(function (key) {
+      element.setAttribute(key, attributes[key]);
+    });
+
+    if (text !== undefined) {
+      element.textContent = text;
+    }
+
+    scene.appendChild(element);
+    return element;
+  }
+
+  function clearScene() {
+    while (scene.firstChild) {
+      scene.removeChild(scene.firstChild);
+    }
+  }
+
+  function calculateForces(current, velocity) {
+    const theta = current.angle * Math.PI / 180;
+    const weight = current.mass * current.gravity;
+    const normal = weight * Math.cos(theta);
+    const downslope = weight * Math.sin(theta);
+    const maximumStatic = current.muS * normal;
+
+    const alreadyMoving = Math.abs(velocity) > 0.0001;
+    const sliding =
+      downslope > maximumStatic + 0.000001 || alreadyMoving;
+
+    const friction = sliding
+      ? current.muK * normal
+      : downslope;
+
+    const netForce = sliding
+      ? Math.max(0, downslope - friction)
+      : 0;
+
+    const acceleration = netForce / current.mass;
+
+    return {
+      theta,
+      weight,
+      normal,
+      downslope,
+      maximumStatic,
+      friction,
+      netForce,
+      acceleration,
+      sliding
+    };
+  }
+
+  function drawArrow(
+    x1,
+    y1,
+    x2,
+    y2,
+    stroke,
+    width,
+    label,
+    dashed
+  ) {
+    const dx = x2 - x1;
+    const dy = y2 - y1;
+    const length = Math.hypot(dx, dy);
+
+    if (length < 0.001) {
+      return;
+    }
+
+    const ux = dx / length;
+    const uy = dy / length;
+    const px = -uy;
+    const py = ux;
+    const head = Math.min(22, length * .25);
+
+    create("line", {
+      x1,
+      y1,
+      x2: x2 - ux * head * .7,
+      y2: y2 - uy * head * .7,
+      stroke,
+      "stroke-width": width,
+      "stroke-linecap": "round",
+      "stroke-dasharray": dashed ? "8 7" : ""
+    });
+
+    create("polygon", {
+      points: [
+        x2 + "," + y2,
+        (x2 - ux * head + px * head * .45) + "," +
+          (y2 - uy * head + py * head * .45),
+        (x2 - ux * head - px * head * .45) + "," +
+          (y2 - uy * head - py * head * .45)
+      ].join(" "),
+      fill: stroke
+    });
+
+    if (label) {
+      create("text", {
+        x: x2 + 10,
+        y: y2 - 9,
+        fill: stroke,
+        "font-size": 18,
+        "font-weight": 700,
+        "paint-order": "stroke",
+        stroke: color("--bg"),
+        "stroke-width": 5
+      }, label);
+    }
+  }
+
+  function drawText(x, y, text, attributes) {
+    create(
+      "text",
+      Object.assign({
+        x,
+        y,
+        fill: color("--muted"),
+        "font-size": 17,
+        "paint-order": "stroke",
+        stroke: color("--bg"),
+        "stroke-width": 5
+      }, attributes || {}),
+      text
+    );
+  }
+
+  function render() {
+    clearScene();
+
+    const forces = calculateForces(state, motion.velocity);
+    const theta = forces.theta;
+
+    const width = 900;
+    const height = 560;
+
+    const start = {
+      x: 145,
+      y: 150
+    };
+
+    const planeLength = 610;
+
+    const ux = Math.cos(theta);
+    const uy = Math.sin(theta);
+
+    // Screen-space normal pointing away from the surface.
+    const nx = -Math.sin(theta);
+    const ny = -Math.cos(theta);
+
+    const end = {
+      x: start.x + planeLength * ux,
+      y: start.y + planeLength * uy
+    };
+
+    const travelLength = planeLength - 110;
+
+    motion.position = clamp(
+      motion.position,
+      0,
+      travelLength
+    );
+
+    const block = {
+      x: start.x + motion.position * ux - 32 * nx,
+      y: start.y + motion.position * uy - 32 * ny
+    };
+
+    const bg = color("--bg");
+    const bgSoft = color("--bg-soft");
+    const ink = color("--ink");
+    const muted = color("--muted");
+    const orange = color("--orange");
+    const orangeLight = color("--orange-light");
+    const brown = color("--brown");
+    const red = color("--red");
+    const blue = color("--blue");
+    const green = color("--green");
+    const purple = color("--purple");
+    const line = color("--line");
+
+    // Background grid.
+    for (let x = 20; x <= width - 20; x += 45) {
+      create("line", {
+        x1: x,
+        y1: 20,
+        x2: x,
+        y2: height - 20,
+        stroke: line,
+        "stroke-width": 1,
+        opacity: .45
+      });
+    }
+
+    for (let y = 20; y <= height - 20; y += 45) {
+      create("line", {
+        x1: 20,
+        y1: y,
+        x2: width - 20,
+        y2: y,
+        stroke: line,
+        "stroke-width": 1,
+        opacity: .45
+      });
+    }
+
+    // Decorative area behind the plane.
+    create("path", {
+      d:
+        "M 90 182 L " +
+        (end.x + 40) + " " +
+        (end.y + 30) +
+        " L " +
+        (end.x + 40) + " " +
+        height +
+        " L 90 " +
+        height +
+        " Z",
+      fill: bgSoft,
+      opacity: .8
+    });
+
+    // Plane shadow.
+    create("line", {
+      x1: start.x - 45,
+      y1: start.y + 16,
+      x2: end.x + 35,
+      y2: end.y + 16,
+      stroke: "#000",
+      "stroke-width": 25,
+      opacity: .24,
+      "stroke-linecap": "round"
+    });
+
+    // Main plane.
+    create("line", {
+      x1: start.x - 40,
+      y1: start.y,
+      x2: end.x + 35,
+      y2: end.y,
+      stroke: brown,
+      "stroke-width": 18,
+      "stroke-linecap": "round"
+    });
+
+    create("line", {
+      x1: start.x - 40,
+      y1: start.y - 8,
+      x2: end.x + 35,
+      y2: end.y - 8,
+      stroke: orange,
+      "stroke-width": 4,
+      "stroke-linecap": "round"
+    });
+
+    // Marks along the plane.
+    for (let distance = 0; distance <= planeLength; distance += 42) {
+      const x = start.x + distance * ux;
+      const y = start.y + distance * uy;
+
+      create("line", {
+        x1: x - nx * 9,
+        y1: y - ny * 9,
+        x2: x + nx * 9,
+        y2: y + ny * 9,
+        stroke: orangeLight,
+        "stroke-width": 2,
+        opacity: .45
+      });
+    }
+
+    // Angle marker.
+    const angleRadius = 65;
+
+    create("path", {
+      d:
+        "M " + start.x + " " + start.y +
+        " A " + angleRadius + " " + angleRadius +
+        " 0 0 1 " +
+        (start.x + angleRadius * ux) + " " +
+        (start.y + angleRadius * uy),
+      fill: "none",
+      stroke: orangeLight,
+      "stroke-width": 3
+    });
+
+    drawText(
+      start.x + angleRadius * .7,
+      start.y + angleRadius * .45,
+      "θ = " + state.angle + "°",
+      {
+        fill: orangeLight,
+        "font-size": 19,
+        "font-weight": 700
+      }
+    );
+
+    drawText(
+      end.x - 15,
+      end.y + 55,
+      "down the plane",
+      {
+        fill: muted,
+        "font-size": 15
+      }
+    );
+
+    // Block shadow.
+    create("ellipse", {
+      cx: block.x + nx * 21,
+      cy: block.y + ny * 21,
+      rx: 47,
+      ry: 13,
+      fill: "#000",
+      opacity: .3,
+      transform:
+        "rotate(" + state.angle + " " +
+        block.x + " " + block.y + ")"
+    });
+
+    // Block.
+    const blockWidth = 86;
+    const blockHeight = 62;
+
+    create("rect", {
+      x: block.x - blockWidth / 2,
+      y: block.y - blockHeight / 2,
+      width: blockWidth,
+      height: blockHeight,
+      rx: 10,
+      fill: orange,
+      stroke: orangeLight,
+      "stroke-width": 3,
+      transform:
+        "rotate(" + state.angle + " " +
+        block.x + " " + block.y + ")"
+    });
+
+    create("rect", {
+      x: block.x - blockWidth / 2 + 9,
+      y: block.y - blockHeight / 2 + 9,
+      width: blockWidth - 18,
+      height: 12,
+      rx: 5,
+      fill: orangeLight,
+      opacity: .38,
+      transform:
+        "rotate(" + state.angle + " " +
+        block.x + " " + block.y + ")"
+    });
+
+    drawText(block.x - 7, block.y + 7, "m", {
+      fill: bg,
+      "font-size": 24,
+      "font-weight": 700,
+      stroke: "none"
+    });
+
+    // Force-vector scaling.
+    const largestForce = Math.max(
+      forces.weight,
+      forces.normal,
+      forces.friction,
+      forces.downslope,
+      1
+    );
+
+    const forceScale = 135 / largestForce;
+
+    // Gravity.
+    drawArrow(
+      block.x,
+      block.y,
+      block.x,
+      block.y + forces.weight * forceScale,
+      red,
+      5,
+      "mg"
+    );
+
+    // Normal force.
+    drawArrow(
+      block.x,
+      block.y,
+      block.x + nx * forces.normal * forceScale,
+      block.y + ny * forces.normal * forceScale,
+      blue,
+      5,
+      "N"
+    );
+
+    // Friction points up the plane.
+    drawArrow(
+      block.x,
+      block.y,
+      block.x - ux * forces.friction * forceScale,
+      block.y - uy * forces.friction * forceScale,
+      green,
+      5,
+      forces.sliding ? "fₖ" : "fₛ"
+    );
+
+    // Parallel component of gravity.
+    drawArrow(
+      block.x,
+      block.y,
+      block.x + ux * forces.downslope * forceScale,
+      block.y + uy * forces.downslope * forceScale,
+      purple,
+      3,
+      "mg sin θ",
+      true
+    );
+
+    // Perpendicular component of gravity.
+    const perpendicular = forces.weight * Math.cos(theta);
+
+    drawArrow(
+      block.x,
+      block.y,
+      block.x - nx * perpendicular * forceScale,
+      block.y - ny * perpendicular * forceScale,
+      purple,
+      3,
+      "mg cos θ",
+      true
+    );
+
+    // Motion indicator.
+    if (forces.sliding) {
+      const arrowStartX = block.x - ux * 72;
+      const arrowStartY = block.y - uy * 72;
+
+      drawArrow(
+        arrowStartX,
+        arrowStartY,
+        arrowStartX + ux * 58,
+        arrowStartY + uy * 58,
+        orangeLight,
+        3,
+        ""
+      );
+    }
+
+    drawText(
+      end.x - 75,
+      end.y + 82,
+      "s = " + motion.position.toFixed(1) + " m",
+      {
+        fill: orangeLight,
+        "font-size": 17
+      }
+    );
+
+    drawText(
+      42,
+      48,
+      "Forces on the block",
+      {
+        fill: ink,
+        "font-size": 22,
+        "font-weight": 700
+      }
+    );
+
+    drawText(
+      42,
+      76,
+      forces.sliding
+        ? "The block is accelerating down the plane"
+        : "Static friction keeps the block at rest",
+      {
+        fill: forces.sliding ? red : green,
+        "font-size": 16
+      }
+    );
+
+    updateStatus(forces);
+    updateTable(forces);
+    updateButtons();
+  }
+
+  function updateStatus(forces) {
+    statusEl.className = "status";
+
+    if (motion.needsRestart) {
+      statusEl.classList.add("restart");
+      statusEl.textContent =
+        "Parameters changed. Press “Restart with parameters” to apply them to the motion.";
+      return;
+    }
+
+    if (forces.sliding) {
+      statusEl.classList.add("sliding");
+      statusEl.textContent =
+        "Sliding: mg sin θ is greater than the maximum static friction μₛN.";
+    } else {
+      statusEl.classList.add("resting");
+      statusEl.textContent =
+        "At rest: static friction exactly balances the downslope component of gravity.";
+    }
+  }
+
+  function updateTable(forces) {
+    const rows = [
+      ["Weight |mg|", forces.weight.toFixed(2) + " N"],
+      ["Normal force N", forces.normal.toFixed(2) + " N"],
+      ["Downslope component mg sin θ", forces.downslope.toFixed(2) + " N"],
+      ["Maximum static friction μₛN", forces.maximumStatic.toFixed(2) + " N"],
+      [
+        forces.sliding
+          ? "Kinetic friction fₖ"
+          : "Static friction fₛ",
+        forces.friction.toFixed(2) + " N"
+      ],
+      ["Net force along plane", forces.netForce.toFixed(2) + " N"],
+      ["Acceleration", forces.acceleration.toFixed(2) + " m/s²"]
+    ];
+
+    forceTable.innerHTML = rows.map(function (row) {
+      return "<tr><td>" +
+        row[0] +
+        "</td><td>" +
+        row[1] +
+        "</td></tr>";
+    }).join("");
+  }
+
+  function updateButtons() {
+    playPause.textContent = motion.running ? "Pause" : "Play";
+
+    playPause.setAttribute(
+      "aria-pressed",
+      motion.running ? "true" : "false"
+    );
+  }
+
+  function readInputs() {
+    return normalize({
+      angle: inputs.angle.value,
+      muS: inputs.muS.value,
+      muK: inputs.muK.value,
+      mass: inputs.mass.value,
+      gravity: inputs.gravity.value
+    });
+  }
+
+  function resetMotion() {
+    motion.position = 0;
+    motion.velocity = 0;
+    motion.running = false;
+    motion.lastTime = 0;
+    motion.needsRestart = false;
+
+    render();
+  }
+
+  function restartWithParameters() {
+    state = readInputs();
+    setInputs();
+    updateShareUrl();
+    resetMotion();
+  }
+
+  function animationFrame(timestamp) {
+    if (!motion.running) {
+      return;
+    }
+
+    if (!motion.lastTime) {
+      motion.lastTime = timestamp;
+    }
+
+    const dt = Math.min(
+      .04,
+      Math.max(0, (timestamp - motion.lastTime) / 1000)
+    );
+
+    motion.lastTime = timestamp;
+
+    const forces = calculateForces(state, motion.velocity);
+
+    if (forces.sliding) {
+      motion.velocity += forces.acceleration * dt;
+      motion.position += motion.velocity * dt;
+    }
+
+    const maxPosition = 500;
+
+    if (motion.position >= maxPosition) {
+      motion.position = maxPosition;
+      motion.running = false;
+      motion.velocity = 0;
+    }
+
+    render();
+
+    if (motion.running) {
+      requestAnimationFrame(animationFrame);
+    }
+  }
+
+  Object.keys(inputs).forEach(function (key) {
+    inputs[key].addEventListener("input", function () {
+      state = readInputs();
+      setInputs();
+      updateShareUrl();
+
+      motion.running = false;
+      motion.lastTime = 0;
+      motion.needsRestart = true;
+
+      render();
+    });
+  });
+
+  playPause.addEventListener("click", function () {
+    if (motion.needsRestart) {
+      restartWithParameters();
+    }
+
+    motion.running = !motion.running;
+    motion.lastTime = 0;
+
+    render();
+
+    if (motion.running) {
+      requestAnimationFrame(animationFrame);
+    }
+  });
+
+  resetButton.addEventListener("click", resetMotion);
+  restartButton.addEventListener("click", restartWithParameters);
+
+  copyUrl.addEventListener("click", function () {
+    const text = shareUrl.value;
+
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(text).then(function () {
+        copyUrl.textContent = "Copied";
+
+        setTimeout(function () {
+          copyUrl.textContent = "Copy";
+        }, 1200);
+      });
+    } else {
+      shareUrl.focus();
+      shareUrl.select();
+      document.execCommand("copy");
+    }
+  });
+
+  shareNative.addEventListener("click", function () {
+    if (!navigator.share) {
+      shareUrl.focus();
+      shareUrl.select();
+      return;
+    }
+
+    navigator.share({
+      title: "Inclined Plane Simulation",
+      url: shareUrl.value
+    }).catch(function () {});
+  });
+
+  if (!navigator.share) {
+    shareNative.disabled = true;
+  }
+
+  setInputs();
+  updateShareUrl();
+  render();
+})();
+</script>
+</body>
+</html>
